@@ -5,13 +5,15 @@
  **************/
 
 function updateCoffeeView(coffeeQty) {
+  //add new text to coffee counter
   const coffeeDisplay = document.getElementById('coffee_counter');
   coffeeDisplay.innerText = coffeeQty;
 }
 
 function clickCoffee(data) {
-  let coffeeIncrement = data.coffee += 1;
-  updateCoffeeView(coffeeIncrement);
+  let coffeeInc
+  coffeeInc = data.coffee += 1;
+  updateCoffeeView(coffeeInc);
   renderProducers(data)
 ;}
 
@@ -20,17 +22,22 @@ function clickCoffee(data) {
  **************/
 
 function unlockProducers(producers, coffeeCount) {
+  //for each  producer that thing is unlocked at half its price
+  // lol i took so much time becuase i had lower case e in foreach 
   producers.forEach(element => {
     let half = element.price / 2;
     if (coffeeCount >= half){
       element.unlocked = true;
     }
+    //i forgot we had to return the producer i kept trying to return producer instead of elemenet
     return element;
 });
 };
 
 function getUnlockedProducers(data) {
   let producers = data.producers;
+  //have to return which producers are true. i didn't think we could return first. 
+  //i edited this code cuz i set ti to a variabe. i guess if we just return it i don't need to
   return producers.filter(element => {
     if (element.unlocked === true){
       return element;
@@ -40,19 +47,32 @@ function getUnlockedProducers(data) {
 }
 
 function makeDisplayNameFromId(id) {
+  // it has to start false that took me a while
+  // so we just take all things with an id and change the snake text which i had to look up into a case sensitive thing to put on the page
+  // but when it transforms to case text it's true. 
   let arr = [... id]
+  //if the string index is not Title case it's false
   var bool = false;
   for (let i=0; i < arr.length; i++){
+    //if the first letter is title case or the first index is NOT then uppercase it
+    //each letter is false unless it's true, otherwise switch it only for the first letter of a word that is not titled at the first
+    //of a word 
+    //if the letter is the first of a word it titles and then if there's another word it swaps
+    //because all letters are lowercase and then it's ok if all the rest of the letters are lowercas
     if (bool === true || i === 0){
       arr[i] = arr[i].toUpperCase()
       bool = false;
     }
-
+    // the result of me figuring out what snake text and Title case is
+    //have to make the underscores spaces but still have to join then at the end. 
+    // so the underscore has to be a space and the string
+    //has to be rewritten to display on the render properly. 
     if (arr[i] === "_"){
       bool = true;
       arr[i] = " ";
     }
   }
+  //have to join all the elements to make a string to render
   return arr.join('');
 }
 
@@ -78,27 +98,32 @@ function makeProducerDiv(producer) {
 }
 
 function deleteAllChildNodes(parent) {
+  //if you submit a parent you clear the list 
+  // so it's the thing from class where we grab the node and how many children she has
   const childLeng = parent.childNodes.length;
   for (i= 0; i< childLeng; i++){
+    //so we got all the children then Moloch feeds
     parent.removeChild(parent.firstChild);
   }
-  // your code here
+  
 }
 
 function renderProducers(data) {
+  // grab the container
   const producerContainer = document.getElementById('producer_container');
+  // find out whos available
   unlockProducers(data.producers, data.coffee);
-
+  //clear the list then repopulate
   var currentProducers = getUnlockedProducers(data);
+  
   deleteAllChildNodes(producerContainer);
-
+  //repopulate here
   currentProducers.forEach(element => {
-    // Creates a Producer <div>
+    //replace an old div with a new dive with new things
     const producerDiv = makeProducerDiv(element);
+    //append new things
     producerContainer.appendChild(producerDiv);
   });
-
-  // your code here
 }
 
 /**************
@@ -106,41 +131,47 @@ function renderProducers(data) {
  **************/
 
 function getProducerById(data, producerId) {
+  //i figured this out earlier and just did a return instead of making a var and returning the var
   return data.producers.filter(element =>{
     if (element.id === producerId){
+      //take the producer with that id and return it
+      //i forgot i called the producer "element" in the filter but 'element' is the producer
       return element;
     }
+    //and yeah this is from the lecture i have to 0 it
   })[0];
 }
 
 function canAffordProducer(data, producerId) {
+  //should be obvious
   let producer = getProducerById(data, producerId)
     if (data.coffee >= producer.price){
       return true;
     }
     return false;
   }
-  
-  // your code here
-
 
 function updateCPSView(cps) {
   const cpsAmt = document.getElementById('cps');
     cpsAmt.innerText = cps;
-
-  // your code here
 }
 
+//from readme.md
 function updatePrice(oldPrice) {
   const newPrice = Math.floor(oldPrice * 1.25);
   return newPrice;
-  // your code here
+  
 }
 
+//so you need producer and canafford
 function attemptToBuyProducer(data, producerId) {
   const producer = getProducerById(data, producerId);
   const afford = canAffordProducer(data, producerId);
-
+  //if you can afford you spend coffee
+  //you make it more expensive for the next round
+  //your cps goes up 
+  //then you get a new cps from current plus new csp
+  // so you replace the inner text of the cps in the html element
   if (afford === true){
     producer.qty++
     data.coffee -= producer.price;
@@ -148,11 +179,13 @@ function attemptToBuyProducer(data, producerId) {
     const currCPS = data.totalCPS;
     const newCPS = producer.cps + currCPS;
     updateCPSView(newCPS);
+
+    //replace the old coffe ps with the new
     data.totalCPS = newCPS;
+    //it has to be a bool because of how the other functions use it
     return true;
   }
   return false;
-  // your code here
 }
 
 function buyButtonClick(event, data) {
@@ -180,11 +213,13 @@ function buyButtonClick(event, data) {
 }
 
 function tick(data) {
+  //apparently this is how often the site renders?
+  //to be fair i asked a lot of people a lot of questions and this 
+  //is what i figured out
   data.coffee += data.totalCPS;
   updateCoffeeView(data.coffee);
   unlockProducers(data.producers, data.coffee);
   renderProducers(data);
-  // your code here
 }
 
 /*************************
